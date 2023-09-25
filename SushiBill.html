@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>SushiBill</title>
+  <link rel="stylesheet" href="SushiBill.css">
+  <!-- React -->
+  <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+</head>
+
+<body>
+  <h1>回転寿司のお会計。皿の色をクリック！</h1>
+  <div id="app"></div>
+
+<script type="text/babel">
+
+//counterとkeyとcountUpを受け取る
+function Counter(props){
+  return(
+    <li style={{backgroundColor:props.counter.color}} onClick={()=>{
+      props.countUp(props.counter)
+    }}>
+      {props.counter.price} × {props.counter.count}
+    </li>
+  )
+}
+
+//countersとcountUpを受け取る
+function CounterList(props){
+  const counters= props.counters.map(counter =>{
+    return(
+      <Counter counter={counter} key={counter.id}
+      countUp={props.countUp}/>
+    )
+  })
+
+  return(
+    <ul>{ counters }</ul>
+  )
+}
+
+class App extends React.Component{
+  //state管理
+  constructor(){
+    super();
+    this.state={
+      counters: [
+        {id:1, price:130, count:0, color:'wheat'},
+        {id:2, price:170, count:0, color:'skyblue'},
+        {id:3, price:220, count:0, color:'limegreen'},
+        {id:4, price:260, count:0, color:'darkorange'},
+        {id:5, price:300, count:0, color:'darkmagenta'},
+        {id:6, price:350, count:0, color:'firebrick'},
+        {id:7, price:430, count:0, color:'goldenrod'},
+        {id:8, price:530, count:0, color:'dimgray'}
+      ],
+      total: 0
+    };
+    //countUpメソッド内のthisがundefinedとなることを防ぐ
+    this.countUp= this.countUp.bind(this);
+  }
+
+  countUp(counter){
+    this.setState(prevState =>{
+     
+      const counters= prevState.counters.map(counter =>{
+        return{
+          id: counter.id,
+          price: counter.price,
+          count: counter.count, 
+          color: counter.color
+        }
+      })
+
+      const pos= counters.map(counter =>{
+        return counter.id;
+      }).indexOf(counter.id);
+      counters[pos].count++;
+
+      const add= counters[pos].price;
+
+        return{
+          counters: counters,
+          total: prevState.total +add
+        }
+  })}
+
+  render(){
+    return(
+      <div className="container">
+        <CounterList
+          counters={this.state.counters}
+          countUp={this.countUp}/>
+
+        <div>total ￥{this.state.total}</div>
+      </div>
+    )
+  }
+
+}
+
+const container= document.getElementById('app');
+const root= ReactDOM.createRoot(container);
+root.render(<App/>);
+
+</script>
+</body>
+</html>
